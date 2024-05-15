@@ -26,7 +26,7 @@ const FrameComponent3 = () => {
   }, [navigate]);
 
   const onNewsTextClick = useCallback(() => {
-    // Please sync "News" to the project
+    navigate("/userView");
   }, []);
 
   const onContactTextClick = useCallback(() => {
@@ -55,23 +55,13 @@ const FrameComponent3 = () => {
             >
               About us
             </div>
+
+
             <div
-              className="flex-1 relative inline-block min-w-[3rem] cursor-pointer"
-              onClick={onServicesTextClick}
-            >
-              Services
-            </div>
-            <div
-              className="flex-1 relative inline-block min-w-[2.813rem] cursor-pointer"
-              onClick={onDoctorsTextClick}
-            >
-              Doctors
-            </div>
-            <div
-              className="relative inline-block min-w-[3.063rem] cursor-pointer"
+              className="relative inline-block min-w-[3.063rem] cursor-pointer "
               onClick={onNewsTextClick}
             >
-              News
+              Your Appointments
             </div>
             <div
               className="flex-1 relative inline-block min-w-[2.813rem] cursor-pointer"
@@ -93,7 +83,7 @@ const FrameComponent3 = () => {
             onClick={onButtonClick}
           >
             <div className="relative text-[1rem] font-medium font-body text-primary text-left inline-block min-w-[6.438rem]">
-              Appointment
+              Book Appointment
             </div>
           </button>
         </div>

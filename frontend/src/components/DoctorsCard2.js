@@ -5,33 +5,19 @@ import { useNavigate } from "react-router-dom";
 
 const DoctorsCard2 = ({ doctor, segment }) => {
   const navigate = useNavigate();
-  const getFormattedDate = (day) => {
-    // Get today's date
-    const today = new Date();
-
-    // Get the day index of the selected day
-    const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
-
-    // Calculate the date of the selected day
-    const date = new Date(today);
-    date.setDate(today.getDate() + (dayIndex - today.getDay() + 7) % 7);
-
-    // Format the date (e.g., "Mon, 01 Jan 2022")
-    return date.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
-  };
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedDay, setSelectedDay] = useState('');
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
 
-const slots = doctor.workingDays;
-const timeSlotsPerDay = {};
-slots.map((slot)=>{
-  if (!timeSlotsPerDay[slot.Day]) {
-    timeSlotsPerDay[slot.Day] = [];
-}
+  const slots = doctor.workingDays;
+  const timeSlotsPerDay = {};
+  slots.map((slot) => {
+    if (!timeSlotsPerDay[slot.Day]) {
+      timeSlotsPerDay[slot.Day] = [];
+    }
     timeSlotsPerDay[slot.Day].push(`${slot.startTime} - ${slot.endTime}`);
-})
+  })
 
   // const [selectedDay, setSelectedDay] = useState('Monday');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
@@ -41,38 +27,38 @@ slots.map((slot)=>{
     // Reset selected time slot when day changes
     setSelectedTimeSlot('');
   };
-  
+
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const day = date.toLocaleDateString('en-US', { weekday: 'long' });
     setSelectedDay(day);
-    if(timeSlotsPerDay[day]== undefined){
+    if (timeSlotsPerDay[day] == undefined) {
       alert('Sir is not available on that day')
       setSelectedDay('')
       setSelectedDate(null)
-    }else{
+    } else {
       setAvailableTimeSlots(timeSlotsPerDay[day]);
     }
   };
 
-  const handleAppointment = async()=>{
+  const handleAppointment = async () => {
     const patientJSON = localStorage.getItem('Patient')
     const patient = JSON.parse(patientJSON);
     const patientId = patient._id;
-    const appointment = { doctor_id: doctor._id,patient_id:patientId ,day:selectedDay, time: selectedTimeSlot, department:segment,date:selectedDate }
+    const appointment = { doctor_id: doctor._id, patient_id: patientId, day: selectedDay, time: selectedTimeSlot, department: segment, date: selectedDate }
     try {
       const response = await fetch("http://localhost:4000/appointment/createappointment", {
         method: "POST",
         body: JSON.stringify(appointment),
         headers: {
           "Content-Type": "application/json",
-          'Authorization':`Bearer ${patient.token}`
+          'Authorization': `Bearer ${patient.token}`
         },
       });
       const json = await response.json();
       if (json && Object.keys(json).length > 0) {
         alert("Appointment Booked");
-    }
+      }
       navigate('/home')
     } catch (error) {
       alert(error.message)
@@ -106,7 +92,7 @@ slots.map((slot)=>{
                 wrapperClassName="w-full"
                 minDate={new Date()}
               />
-          {/* <div className="z-[200] flex flex-col gap-4 ">
+              {/* <div className="z-[200] flex flex-col gap-4 ">
             <div className="flex flex-col gap-2 "> <label htmlFor="day">Select a day:</label>
               <select id="day" value={selectedDay} onChange={handleDayChange}
                 className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 disabled:opacity-50"
@@ -118,7 +104,7 @@ slots.map((slot)=>{
                 ))}
               </select></div> */}
 
-            {/* <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
               <label htmlFor="timeSlot">Select a time slot:</label>
               <select
                 id="timeSlot"
@@ -136,81 +122,81 @@ slots.map((slot)=>{
               </select>
             </div> */}
 
-            {selectedDate !== null ? (
-              <div className="mb-4">
-                <p className="text-sm text-gray-700">Selected Day: {selectedDay}</p>
-                <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700">Available Time Slots:</label>
-                <select
-                  id="timeSlot"
-                  className="mt-1 px-3 py-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary focus:outline-none"
-                  disabled={availableTimeSlots.length === 0}
-                  value={selectedTimeSlot}
-                  onChange={(e)=>setSelectedTimeSlot(e.target.value)}
-                >
-                  {availableTimeSlots.length === 0 ? (
-                    <option value="">No time slots available</option>
-                  ) : (
-                    <>
-                      <option value="">Select a time slot</option>
-                      {availableTimeSlots.map((timeSlot) => (
-                        <option key={timeSlot} value={timeSlot}>{timeSlot}</option>
-                      ))}
-                    </>
-                  )}
-                </select>
+              {selectedDate !== null ? (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700">Selected Day: {selectedDay}</p>
+                  <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700">Available Time Slots:</label>
+                  <select
+                    id="timeSlot"
+                    className="mt-1 px-3 py-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary focus:outline-none"
+                    disabled={availableTimeSlots.length === 0}
+                    value={selectedTimeSlot}
+                    onChange={(e) => setSelectedTimeSlot(e.target.value)}
+                  >
+                    {availableTimeSlots.length === 0 ? (
+                      <option value="">No time slots available</option>
+                    ) : (
+                      <>
+                        <option value="">Select a time slot</option>
+                        {availableTimeSlots.map((timeSlot) => (
+                          <option key={timeSlot} value={timeSlot}>{timeSlot}</option>
+                        ))}
+                      </>
+                    )}
+                  </select>
+                </div>
+              ) : (
+
+
+                <div className="mb-4">
+                  <p className="text-sm text-gray-700">No Day selected</p>
+                  <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700">Available Time Slots:</label>
+
+                  <select
+                    id="date"
+                    className="mt-1 px-3 py-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary focus:outline-none"
+                    value=""
+                    disabled
+                  >
+                    <option value="" disabled>Select a date first</option>
+                    {/* Additional options can be added here */}
+                    <option value="no-date" disabled>No date selected first</option>
+                  </select></div>
+              )}
+            </div>
+
+
+            <div className="flex flex-row items-center justify-center py-[0rem] pr-[0.875rem] pl-[0.687rem]">
+              <div className="flex flex-row items-center justify-center gap-[1.25rem]">
+                <img
+                  className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
+                  alt=""
+                  src="/vector-21.svg"
+                />
+                <img
+                  className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
+                  alt=""
+                  src="/vector-31.svg"
+                />
+                <img
+                  className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
+                  alt=""
+                  src="/vector-4.svg"
+                />
               </div>
-            ) : (
-
-
-              <div className="mb-4">
-                <p className="text-sm text-gray-700">No Day selected</p>
-                <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700">Available Time Slots:</label>
-
-                <select
-                  id="date"
-                  className="mt-1 px-3 py-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary focus:outline-none"
-                  value=""
-                  disabled
-                >
-                  <option value="" disabled>Select a date first</option>
-                  {/* Additional options can be added here */}
-                  <option value="no-date" disabled>No date selected first</option>
-                </select></div>
-            )}
-          </div>
-
-
-          <div className="flex flex-row items-center justify-center py-[0rem] pr-[0.875rem] pl-[0.687rem]">
-            <div className="flex flex-row items-center justify-center gap-[1.25rem]">
-              <img
-                className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
-                alt=""
-                src="/vector-21.svg"
-              />
-              <img
-                className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
-                alt=""
-                src="/vector-31.svg"
-              />
-              <img
-                className="h-[1.5rem] w-[1.5rem] relative min-h-[1.5rem] z-[0]"
-                alt=""
-                src="/vector-4.svg"
-              />
             </div>
           </div>
         </div>
+        <button className="cursor-pointer [border:none] py-[0.75rem] px-[1.25rem] bg-[transparent] self-stretch flex flex-row items-start justify-center relative  whitespace-nowrap " onClick={() => handleAppointment()}>
+          <div className="h-full w-full absolute !m-[0] top-[0rem] right-[0rem] bottom-[0rem] left-[0rem] rounded-t-none rounded-b-8xs bg-primary hover:bg-primary-200" />
+          <div className="relative text-[1rem] leading-[140%] font-body text-lightsteelblue-100  text-center inline-block min-w-[5.813rem] z-[1]" >
+            Book Appointment
+          </div>
+        </button>
       </div>
-      <button className="cursor-pointer [border:none] py-[0.75rem] px-[1.25rem] bg-[transparent] self-stretch flex flex-row items-start justify-center relative  whitespace-nowrap " onClick={()=>handleAppointment()}>
-        <div className="h-full w-full absolute !m-[0] top-[0rem] right-[0rem] bottom-[0rem] left-[0rem] rounded-t-none rounded-b-8xs bg-primary hover:bg-primary-200" />
-        <div className="relative text-[1rem] leading-[140%] font-body text-lightsteelblue-100  text-center inline-block min-w-[5.813rem] z-[1]" >
-          Book Appointment
-        </div>
-      </button>
-    </div>
     </div>
   )
 }
-  
+
 
 export default DoctorsCard2;
